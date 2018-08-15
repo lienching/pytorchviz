@@ -32,7 +32,14 @@ def make_dot(var, params=None):
     seen = set()
 
     def size_to_str(size):
-        return '(' + (', ').join(['%d' % v for v in size]) + ')'
+        str = "";
+        if ( len(size) == 4 ):
+            str = "output channel:%d\ninput channel:%d\nkernal size=%dx%d" % (size[0],size[1],size[2],size[3])
+        elif ( len(size) == 2 ):
+            str = "output feature:%d\ninput feature:%d" % ( size[0], size[1] )
+        else:
+            str = '(' + (', ').join(['%d' % v for v in size]) + ')'
+        return str
 
     def add_nodes(var):
         if var not in seen:
@@ -46,7 +53,7 @@ def make_dot(var, params=None):
                 node_name = '%s\n %s' % (name, size_to_str(u.size()))
                 dot.node(str(id(var)), node_name, fillcolor='lightblue')
             else:
-                dot.node(str(id(var)), str(type(var).__name__))
+                dot.node(str(id(var)), str(type(var).__name__).replace("Backward",""))
             seen.add(var)
             if hasattr(var, 'next_functions'):
                 for u in var.next_functions:
